@@ -1,0 +1,381 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title> Join !</title>
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/custom.css">
+    <script src="/js/bootstrap.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        var flag = 0
+        var flag2 = 0
+        function frmcheck() {
+            var frm = document.testt
+            //var temp = "인증번호를 입력하세요."
+            var id = frm.id.value
+            var email = frm.email.value
+            var keyvalue = frm.keyvalue.value
+
+            // if (!keyvalue || keyvalue == temp) {
+            //     alert("인증번호를 입력하세요.");
+            //     return;
+            // }
+            axios({
+                method: 'post',
+                url: '/join/',
+                data: {
+                    keyvalue: keyvalue,
+                    id: id,
+                    value: 1
+                }
+            })
+                .then(function (response) {
+                    console.log(response.data);
+                    if (response.data) {
+                        alert('인증번호 확인되었습니다');
+                        flag = 1
+                    } else { alert('인증번호가 일치하지 않습니다.') }
+                })
+                .catch(function (err) {
+                    console.log(err)
+                })
+        }
+        //아이디 중복체크
+        function checkid() {
+            var frm = document.testt
+            var id = frm.id.value
+
+            if (id == "" || id == null) {
+                alert("아이디를 입력하세요.");
+                id.focus();
+                //return false
+            }
+
+            axios({
+                method: 'post',
+                url: '/join/',
+                data: {
+                    id: id,
+                    value: 2
+                }
+            })
+                .then(function (response) {
+                    console.log(response.data);
+                    if (response.data) {
+                        alert('아이디가 이미 존재합니다.');
+                    } else {
+                        alert('사용가능한 아이디입니다.')
+                        flag2 = 1
+                    }
+                })
+                .catch(function (err) {
+                    console.log(err)
+                })
+        }
+
+        //이메일 전송
+        function requestMail() {
+            var frm = document.testt
+            var id = frm.id.value;
+            var email = frm.email.value;
+            var target = document.getElementById("webmail");
+            var web = target.options[target.selectedIndex].text;// @gmail.com
+            var ans = email + web;
+            var tmp = "@";
+            var tmp2 = email.indexOf(tmp)
+
+            if (email == null || email == "" || tmp2 != -1) {
+                alert("이메일을 다시 확인해주세요.")
+                email.focus()
+            }
+
+            axios({
+                method: 'post',
+                url: '/join/',
+                data: {
+                    address: ans,
+                    id: id,
+                    value: 0
+                }
+            }); alert("메일이 발송되었습니다.")
+        }
+
+        //최종 완료 버튼
+        function finish() {
+            var frm = document.testt
+            var id = frm.id.value;
+            var password2 = frm.password2.value;
+            var name = frm.name.value;
+            var age = frm.age.value;
+            var major = frm.major.value;
+            var email = frm.email.value;
+            var gender = frm.gender.value;
+            var target = document.getElementById("webmail");
+            var web = target.options[target.selectedIndex].text;// @gmail.com
+            var ans = email + web;
+
+
+            if (id == null || password2 == null || name == null || age == null || major == 0 || email == null || keyvalue == null) {
+                alert("모든 항목을 다 입력해주세요.")
+                return;
+            }
+
+            if (flag == 0 || flag2 == 0) {
+                alert("모든 인증을 완료해주세요.")
+                return;
+            }
+
+            axios({
+                method: 'post',
+                url: '/join/',
+                data: {
+                    address: ans,
+                    id: id,
+                    password2: password2,
+                    name: name,
+                    age: age,
+                    gender: gender,
+                    major: major,
+                    value: 3
+                }
+            })
+            location.href = "login";
+        }
+
+        //비밀번호 확인
+        function verifynotify(field1, field2, result_id, match_html, nomatch_html) {
+            this.field1 = field1;
+            this.field2 = field2;
+            this.result_id = result_id;
+            this.match_html = match_html;
+            this.nomatch_html = nomatch_html;
+
+            this.check = function () {
+                if (!this.result_id) { return false; }
+                if (!document.getElementById) { return false; }
+                r = document.getElementById(this.result_id);
+                if (!r) { return false; }
+
+                if (this.field1.value != "" && this.field1.value == this.field2.value) {
+                    r.innerHTML = this.match_html;
+                } else {
+                    r.innerHTML = this.nomatch_html;
+                }
+            }
+        }
+        function verifyInput() {
+            verify = new verifynotify();
+            verify.field1 = document.testt.password1;
+            verify.field2 = document.testt.password2;
+            verify.result_id = "password_result";
+            verify.match_html = "<span style=\"color:blue\">패스워드가 일치합니다!<\/span>";
+            verify.nomatch_html = "<span style=\"color:red\">귀하의 비밀번호가 일치하는지 확인하십시오!<\/span>";
+
+            // Update the result message
+            verify.check();
+        }
+        function addLoadEvent(func) {
+            var oldonload = window.onload;
+            if (typeof window.onload != 'function') {
+                window.onload = func;
+            } else {
+                window.onload = function () {
+                    if (oldonload) {
+                        oldonload();
+                    }
+                    func();
+                }
+            }
+        }
+        addLoadEvent(function () {
+            verifyInput();
+        });        
+    </script>
+</head>
+
+<body>
+    <nav class="navbar navbar-default">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"
+                aria-expanded="false">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/main">Catholic University Voting System</a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li>
+                    <a href="/main">CANDIDATE</a>
+                </li>
+                <li>
+                    <a href="/main">VOTE</a>
+                </li>
+                <li>
+                    <a href="/main">VOTING RATE</a>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">BOARD
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="/main">NOTICE</a>
+                        </li>
+                        <li>
+                            <a href="/main">FREE BOARD</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">JOIN US
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="/login">LOGIN</a>
+                        </li>
+                        <li>
+                            <a href="/join">SIGN UP</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+
+        </div>
+    </nav>
+
+    <div class="formWrap">
+
+        <form name="testt">
+            <table class="table table-bordered table-hover" style="text-align: center; border: 1px solid #dddddd">
+                <thead>
+                    <tr>
+                        <th colspan="3">
+                            <h4>회원 가입</h4>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="width: 110px;">
+                            <h5>아이디</h5>
+                        </td>
+                        <td colspan="1">
+                            <input class="form-control" type="text" id="id" name="id" maxlength="20" placeholder="학번을 입력하세요.">
+                        </td>
+                        <td style="width: 110px;">
+                            <button class="btn btn-primary" id="idCheck" name="idCheck" onclick="checkid();" type="button">중복체크</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 110px;">
+                            <h5>비밀번호</h5>
+                        </td>
+                        <td colspan="2">
+                            <input onkeyup="verify.check();" class="form-control" type="password" id="password1" name="password1" maxlength="20" placeholder="비밀번호를 입력하세요.">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 110px;">
+                            <h5>비밀번호 확인</h5>
+                        </td>
+                        <td colspan="2">
+                            <input onkeyup="verify.check();" class="form-control" type="password" id="password2" name="password2" maxlength="20" placeholder="비밀번호를 한 번 더 입력하세요.">
+                            <h6 id="password_result"> </h6>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 110px;">
+                            <h5>이름</h5>
+                        </td>
+                        <td colspan="2">
+                            <input class="form-control" type="text" id="name" name="name" maxlength="20" placeholder="이름을 입력하세요">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 110px;">
+                            <h5>나이</h5>
+                        </td>
+                        <td colspan="2">
+                            <input class="form-control" type="text" id="age" name="age" maxlength="20" placeholder="나이를 입력하세요.">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 110px;">
+                            <h5>성별</h5>
+                        </td>
+                        <td colspan="2">
+                            <div class="form-group" style="text-align: center; margin: 0 auto;">
+                                <div class="btn-group" data-toggle="buttons">
+                                    <input type="radio" name="gender" autocomplete="off" value="0" checked="checked">남자 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <input type="radio" name="gender" autocomplete="off" value="1">여자
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 110px;">
+                            <h5>전공</h5>
+                        </td>
+                        <td colspan="2">
+                            <select class="form-control" type="text" id="major" name="major">
+                                <option value="0">학과를 선택하세요.</option>
+                                <option value="1">의류학과</option>
+                                <option value="2">경제학과</option>
+                                <option value="3">컴퓨터정보공학부</option>
+                                <option value="4">미디어콘텐츠학과</option>
+                                <option value="5">화학과</option>
+                            </select>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="width: 110px;">
+                            <h5>이메일</h5>
+                        </td>
+                        <td colspan="1">
+                            <input class="form-control" type="text" name="email" id="email" placeholder="웹메일 아이디를 입력하세요.">
+                            <select name="webmail" id="webmail">
+                                <option value="option1" selected>@gmail.com</option>
+                            </select>
+                        </td>
+
+                        <td style="width: 110px;">
+                            <input class="btn btn-primary" type="button" value="인증번호 발송" onclick="requestMail();">
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="width: 110px;">
+                            <h5>인증번호 입력</h5>
+                        </td>
+                        <td colspan="1">
+                            <input class="form-control" type="text" name="keyvalue" id="keyvalue" maxlength="20" placeholder="인증번호를 입력하세요.">
+                        </td>
+                        <td>
+                            <input class="btn btn-primary" type="button" value="확인" onclick="frmcheck();">
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="text-align: center;" colspan="3">
+                            <h5 style="color: red;" id="passwordCheckMessage"></h5>
+                            <input class="btn btn-primary pull-center" type="button" onclick="finish();" onclick="location.href='login.ejs'" value="완료">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+    </div>
+</body>
+
+</html>

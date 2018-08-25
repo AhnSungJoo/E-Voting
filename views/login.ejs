@@ -1,0 +1,156 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Login</title>
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/custom.css">
+    <script src="/js/bootstrap.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        function checkLogin() {
+            var frm = document.testt
+            var id = frm.id.value;
+            var password = frm.password.value;
+            console.log("checkLogin!!")
+
+            if (id == null || password == null) {
+                alert("모든 항목을 다 입력해주세요.")
+                return;
+            }
+        }
+
+    </script>
+</head>
+
+<body>
+    <nav class="navbar navbar-default">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"
+                aria-expanded="false">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/main">Catholic University Voting System</a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li>
+                    <a href="/main">CANDIDATE</a>
+                </li>
+                <li>
+                    <a href="/main">VOTE</a>
+                </li>
+                <li>
+                    <a href="/main">VOTING RATE</a>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">BOARD
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="/main">NOTICE</a>
+                        </li>
+                        <li>
+                            <a href="/main">FREE BOARD</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+            <!-- 
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">JOIN US
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="/login">LOGIN</a>
+                        </li>
+                        <li>
+                            <a href="/join">SIGN UP</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul> -->
+
+        </div>
+    </nav>
+
+
+    <div class="container" id="center" class="formWrap">
+        <form name="testt" method="post">
+            <table class="table table-bordered table-hover" style="text-align: center; border: 1px solid #dddddd">
+                <thead>
+                    <tr>
+                        <th colspan="2">
+                            <h4>로그인</h4>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="width: 110px;">아이디</td>
+                        <td>
+                            <input class="form-control" type="text" name="id" maxlength="20" placeholder="학번을 입력하세요.">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 110px;">비밀번호</td>
+                        <td>
+                            <input class="form-control" type="password" name="password" maxlength="20" placeholder="비밀번호를 입력하세요.">
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="text-align: center" colspan="2">
+                            <input class="sendbtn" type="submit" onclick="checkLogin();" value="LOGIN">
+                            <input type="button" value="SIGN UP" onclick="location.href='/join' ">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+    </div>
+
+    <script>
+        document.querySelector('.sendbtn').addEventListener('click', function (e) {
+            e.preventDefault();
+            var id = document.getElementsByName('id')[0].value
+            var password = document.getElementsByName('password')[0].value;
+
+            sendAjax('http://localhost:3000/login', { 'id': id, 'password': password }
+            );
+        })
+        function sendAjax(url, data) {
+            data = JSON.stringify(data);
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', url);
+            xhr.setRequestHeader('Content-Type', "application/json");
+            xhr.send(data);
+            console.log(data);
+            xhr.addEventListener('load', function () {
+                var result = JSON.parse(xhr.responseText);
+                var resultDiv = document.querySelector("result");
+                if (result.id) {
+                    console.log("id good")
+                    window.location.href = "/main";
+                    //resultDiv.innerHTML = result.id + "님";
+                }
+                else if (xhr.status === 401) {
+                    console.log(result);
+                    window.location.href = "/login";
+                    resultDiv.innerHTML = result;
+                    alert(result)
+                }
+                else resultDiv.innerHTML = result;
+            });
+        }
+    </script>
+</body>
+
+</html>
