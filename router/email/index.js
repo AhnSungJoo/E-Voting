@@ -17,8 +17,8 @@ function sendTo(address, id) {
     var connection = mysql.createConnection({
         host: 'localhost',
         port: 3306,
-        user: 'root',
-        password: '1234',
+        user: '****',
+        password: '****',
         database: 'jsman'
     })
     connection.connect()
@@ -35,15 +35,15 @@ function sendTo(address, id) {
 
         //gmail 계정과 암호 
         auth: {
-            user: 'testblockcat@gmail.com',
-            pass: '#potensj11'
+            user: '****@gmail.com',
+            pass: '****'
         },
         maxConnections: 500,
         maxMessages: 500
     }));
 
     var mailOpt = {
-        from: 'testblockcat@gmail.com',
+        from: '****@gmail.com',
         to: address,
         subject: '가톨릭대학교 전자투표 시스템 회원가입 인증번호 ',
         html: "인증번호: " + result + " 를 입력하세요<br>"
